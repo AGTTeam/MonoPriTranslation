@@ -1,13 +1,14 @@
 import codecs
 import os
 import game
-from hacktools import common
+from hacktools import common, wii
 
 
 def run():
     infolder = "data/extract/DATA/files/"
     outfolder = "data/repack/DATA/files/"
     infile = "data/msbe_input.txt"
+    fontfile = "data/extract/DATA/files/resfont/font_jp.brfnt"
     chartot = transtot = 0
 
     if not os.path.isfile(infile):
@@ -15,6 +16,7 @@ def run():
         return
 
     common.logMessage("Repacking MSBE from", infile, "...")
+    glyphs = wii.getFontGlyphs(fontfile)
     with codecs.open(infile, "r", "utf-8") as msbe:
         files = common.getFiles(infolder + "script/", ".bscr") + common.getFiles(infolder + "text/", ".bin")
         for file in common.showProgress(files):
@@ -85,6 +87,7 @@ def run():
                         if newutfstr == "":
                             game.writeUTFString(f, utfstr)
                         else:
+                            newutfstr = common.wordwrap(newutfstr, glyphs, 490, None, 26)
                             game.writeUTFString(f, codes + newutfstr)
                             if dataoffsets[i] > 0:
                                 pos = f.tell()
