@@ -35,7 +35,6 @@ def run():
                 if constant != 512:
                     common.logError("Constant is", constant)
                 strnum = f.readUInt()
-                out.write("strnum:" + str(strnum) + " " + str(f.tell()) + "\n")
                 constant = f.readUInt()
                 if constant != 0:
                     common.logError("Constant 2 is", constant)
