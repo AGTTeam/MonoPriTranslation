@@ -3,7 +3,7 @@ import os
 import click
 from hacktools import common, wii
 
-version = "1.1.0"
+version = "1.2.0"
 isofile = "data/disc.iso"
 infolder = "data/extract/"
 outfolder = "data/repack/"

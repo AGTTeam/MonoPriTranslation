@@ -1,5 +1,5 @@
 import os
-from hacktools import common
+from hacktools import common, wii
 
 
 def run():
@@ -19,16 +19,16 @@ def run():
         common.logDebug("Processing", file, "...")
         archive = file.split("/")[0]
         folder = outfolder
-        format = ""
+        tplfile = os.path.basename(file).replace(".png", ".tpl")
         if archive != "textures":
             folder = repackfolder
             if not os.path.isdir(folder + archive):
                 common.copyFolder(extractfolder + archive, repackfolder + archive)
-            archive += "/root/timg"
-            format = " -x TPL.C8.P3"
-        elif "mm1" in file:
-            continue
-        common.execute("wimgt -o ENCODE " + workfolder + file + " -D " + folder + archive + "/" + os.path.basename(file).replace(".png", ".tpl") + format, False)
+            archive += "/root/timg/"
+            wii.writeTPL(repackfolder + archive + tplfile, workfolder + file)
+        elif ".mm" not in file:
+            format = "R565" if "TX900_0010" in tplfile or "TX900_0020" in tplfile else "R3"
+            common.execute("wimgt -o ENCODE " + workfolder + file + " -D " + folder + archive + "/" + tplfile + " -x TPL." + format, False)
 
     common.logMessage("Repacking ARC from", repackfolder, "...")
     files = os.listdir(repackfolder)
