@@ -25,7 +25,8 @@ def run():
             if not os.path.isdir(folder + archive):
                 common.copyFolder(extractfolder + archive, repackfolder + archive)
             archive += "/root/timg/"
-            wii.writeTPL(repackfolder + archive + tplfile, workfolder + file)
+            tpl = wii.readTPL(repackfolder + archive + tplfile)
+            wii.writeTPL(repackfolder + archive + tplfile, tpl, workfolder + file)
         elif ".mm" not in file:
             format = "R565" if "TX900_0010" in tplfile or "TX900_0020" in tplfile else "R3"
             common.execute("wimgt -o ENCODE " + workfolder + file + " -D " + folder + archive + "/" + tplfile + " -x TPL." + format, False)
