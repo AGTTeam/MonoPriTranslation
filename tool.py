@@ -3,7 +3,7 @@ import os
 import click
 from hacktools import common, wii
 
-version = "1.2.0"
+version = "1.2.1"
 isofile = "data/disc.iso"
 infolder = "data/extract/"
 outfolder = "data/repack/"
@@ -54,7 +54,7 @@ def repack(no_patch, msbe, movie, tpl):
         common.mergeFolder(replacefolder, outfolder)
 
     if not no_patch:
-        common.makeFolder(patchfolder)
+        common.makeFolders(patchfolder)
         common.makeFolder(patchfolder.replace("monopri/", "riivolution/"))
         common.logMessage("Creating patch folder in", patchfolder, "...")
         files = common.getFiles(patchin)
