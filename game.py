@@ -1,3 +1,5 @@
+from hacktools import common
+
 queststart = 26420
 questnum = 438
 
@@ -12,12 +14,17 @@ def readUTFString(f):
         else:
             strlen += 1
     f.seek(pos)
-    return f.read(strlen).decode("utf-8").replace("\n", "|")
+    return f.read(strlen).decode("utf-8").replace("\n", "|"), strlen
 
 
-def writeUTFString(f, s):
-    f.write(s.replace("|", "\n").encode("utf-8"))
+def writeUTFString(f, s, maxlen):
+    encoded = s.replace("|", "\n").encode("utf-8")
+    if maxlen != -1 and len(encoded) > maxlen:
+        common.logError("String", s, "is too long.")
+        encoded = encoded[:maxlen]
+    f.write(encoded)
     f.writeByte(0x00)
+    return len(encoded)
 
 
 def removeStringCode(s):

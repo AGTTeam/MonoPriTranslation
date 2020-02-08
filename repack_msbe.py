@@ -74,7 +74,7 @@ def run():
                         f.writeUInt(pos - msbeoff)
                         f.seek(pos)
                         # Read string and re-apply codes before writing
-                        utfstr = game.readUTFString(fin)
+                        utfstr, strlen = game.readUTFString(fin)
                         fin.seek(1, 1)
                         utfstripped, codes = game.removeStringCode(utfstr)
                         newutfstr = ""
@@ -85,10 +85,10 @@ def run():
                             if newutfstr == "!":
                                 newutfstr = " "
                         if newutfstr == "":
-                            game.writeUTFString(f, utfstr)
+                            game.writeUTFString(f, utfstr, -1)
                         else:
                             newutfstr = common.wordwrap(newutfstr, glyphs, 482, None, 26)
-                            game.writeUTFString(f, codes + newutfstr)
+                            game.writeUTFString(f, codes + newutfstr, -1)
                             if dataoffsets[i] > 0:
                                 pos = f.tell()
                                 f.seek(dataoffsets[i])
@@ -101,7 +101,7 @@ def run():
                 chartot, transtot = common.getSectionPercentage(section, chartot, transtot)
                 f.write(fin.read(game.queststart))
                 for i in range(game.questnum):
-                    utfstr = game.readUTFString(fin)
+                    utfstr, strlen = game.readUTFString(fin)
                     fin.seek(1, 1)
                     utfstripped, codes = game.removeStringCode(utfstr)
                     newutfstr = ""
@@ -112,7 +112,10 @@ def run():
                         if newutfstr == "!":
                             newutfstr = " "
                     if newutfstr == "":
-                        game.writeUTFString(f, utfstr)
+                        game.writeUTFString(f, utfstr, -1)
                     else:
-                        game.writeUTFString(f, codes + newutfstr)
+                        newlen = game.writeUTFString(f, codes + newutfstr, strlen)
+                        if strlen > newlen:
+                            for j in range(strlen - newlen):
+                                f.writeByte(0x00)
     common.logMessage("Done! Translation is at {0:.2f}%".format((100 * transtot) / chartot))
