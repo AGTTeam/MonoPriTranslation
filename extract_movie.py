@@ -23,6 +23,6 @@ def run():
                     subend = f.readUInt()
                     subpointer = f.readUInt()
                     f.seek(subpointer)
-                    substr = game.readUTFString(f)
+                    substr, strlen = game.readUTFString(f)
                     out.write(str(substart) + ":" + str(subend) + ":" + substr + "=\n")
     common.logMessage("Done! Extracted", len(files), "files")

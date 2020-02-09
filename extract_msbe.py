@@ -64,7 +64,7 @@ def run():
                     f.seek(msbeoff + strings[i][0])
                     if check != f.tell():
                         common.logWarning("str diff", check, f.tell(), i)
-                    utfstr = game.readUTFString(f)
+                    utfstr, strlen = game.readUTFString(f)
                     utfstr, codes = game.removeStringCode(utfstr)
                     f.seek(1, 1)
                     common.logDebug(strings[i][1], strings[i][2], utfstr)
@@ -74,7 +74,7 @@ def run():
             out.write("!FILE:quest.bin\n")
             f.seek(game.queststart)
             for i in range(game.questnum):
-                utfstr = game.readUTFString(f)
+                utfstr, strlen = game.readUTFString(f)
                 utfstr, codes = game.removeStringCode(utfstr)
                 out.write(utfstr + "=\n")
                 f.seek(1, 1)
