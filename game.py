@@ -14,7 +14,7 @@ def readUTFString(f):
         else:
             strlen += 1
     f.seek(pos)
-    return f.read(strlen).decode("utf-8").replace("\n", "|"), strlen
+    return f.read(strlen).decode("utf-8").replace("\n", "|").replace("\r", ""), strlen
 
 
 def writeUTFString(f, s, maxlen):
