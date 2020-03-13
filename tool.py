@@ -1,6 +1,9 @@
 import filecmp
 import os
 import click
+import time
+import pyimgur
+import requests
 from hacktools import common, wii
 
 version = "1.2.3"
@@ -80,6 +83,29 @@ def repack(no_patch, msbe, movie, tpl):
             f.writeLine('\t</patch>')
             f.writeLine('</wiidisc>')
         common.logMessage("Done!")
+
+
+@common.cli.command()
+@click.argument("clientid")
+def generatepo(clientid):
+    tplfolder = "data/work_TPL"
+    files = common.getFiles(tplfolder)
+    im = pyimgur.Imgur(clientid)
+    with common.Stream("data/tpl.po", "w") as f:
+        for file in common.showProgress(files):
+            uploaded = False
+            while not uploaded:
+                try:
+                    image = im.upload_image(tplfolder + file, title="file")
+                    f.writeLine('#. ' + image.link)
+                    f.writeLine('msgid "' + file.split("/")[2] + '"')
+                    f.writeLine('msgstr ""')
+                    f.writeLine('')
+                    uploaded = True
+                    time.sleep(5)
+                except requests.HTTPError:
+                    time.sleep(300)
+    common.logMessage("Done!")
 
 
 if __name__ == "__main__":
