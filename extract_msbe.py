@@ -68,7 +68,11 @@ def run():
                     utfstr, codes = game.removeStringCode(utfstr)
                     f.seek(1, 1)
                     common.logDebug(strings[i][1], strings[i][2], utfstr)
-                    out.write(utfstr + "=\n")
+                    if "%_mk" in codes:
+                        speakerid = codes.split("%_mk[")[1].split("]")[0]
+                        out.write(utfstr + "=#" + speakerid + "\n")
+                    else:
+                        out.write(utfstr + "=\n")
         # Separate handling for quest.bin
         with common.Stream(infolder + "quest/quest.bin", "rb") as f:
             out.write("!FILE:quest.bin\n")
