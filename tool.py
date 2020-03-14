@@ -89,6 +89,7 @@ def repack(no_patch, msbe, movie, tpl):
 @click.argument("clientid")
 def generatepo(clientid):
     tplfolder = "data/work_TPL"
+    tploriginal = "data/out_TPL"
     files = common.getFiles(tplfolder)
     im = pyimgur.Imgur(clientid)
     with common.Stream("data/tpl.po", "w") as f:
@@ -96,13 +97,13 @@ def generatepo(clientid):
             uploaded = False
             while not uploaded:
                 try:
-                    image = im.upload_image(tplfolder + file, title="file")
+                    image = im.upload_image(tploriginal + file, title="file")
                     f.writeLine('#. ' + image.link)
                     f.writeLine('msgid "' + file.split("/")[2] + '"')
                     f.writeLine('msgstr ""')
                     f.writeLine('')
                     uploaded = True
-                    time.sleep(5)
+                    time.sleep(30)
                 except requests.HTTPError:
                     time.sleep(300)
     common.logMessage("Done!")
