@@ -15,7 +15,7 @@ venv\Scripts\activate
 pip install -r requirements.txt
 pip install -e ../hacktools
 ```
-Run tool.py or build with build.bat  
+Run tool.py or build with "pyinstaller tool.spec".  
 ## Text Editing
 Rename the \*\_output.txt files to \*\_input.txt (msbe_output.txt to msbe_input.txt, etc) and add translations for each line after the "=" sign.  
 [TODO] The text in msbe_input is automatically wordwrapped, but a "|" can be used to force a line break.  
