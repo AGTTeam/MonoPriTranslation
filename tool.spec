@@ -4,10 +4,10 @@ block_cipher = None
 
 
 a = Analysis(['tool.py'],
-             pathex=['C:\\roms\\soulwii'],
+             pathex=['D:\\roms\\monopri'],
              binaries=[],
              datas=[],
-             hiddenimports=[],
+             hiddenimports=['pkg_resources.py2_warn'],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
