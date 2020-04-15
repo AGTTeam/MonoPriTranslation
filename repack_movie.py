@@ -42,13 +42,18 @@ def run():
                         fin.seek(subpointer)
                         substr, strlen = game.readUTFString(fin)
                         moviestr = str(substart) + ":" + str(subend) + ":" + substr
+                        line = substr
+                        if moviestr in section and section[moviestr][0] != "":
+                            line = section[moviestr][0]
+                            if line.count(":") >= 2:
+                                timecodes = line.split(":", 2)
+                                substart = int(timecodes[0])
+                                subend = int(timecodes[1])
+                                line = timecodes[2]
                         f.writeUInt(substart)
                         f.writeUInt(subend)
                         f.writeUInt(pos)
                         f.seek(pos)
-                        if moviestr in section and section[moviestr][0] != "":
-                            game.writeUTFString(f, section[moviestr][0], -1)
-                        else:
-                            game.writeUTFString(f, substr, -1)
+                        game.writeUTFString(f, line, -1)
                         pos = f.tell()
     common.logMessage("Done! Translation is at {0:.2f}%".format((100 * transtot) / chartot))
