@@ -12,7 +12,7 @@ Run "pipenv install".
 Run the tool with "pipenv run tool.py" or build with "pipenv run pyinstaller tool.spec".  
 ## Text Editing
 Rename the \*\_output.txt files to \*\_input.txt (msbe_output.txt to msbe_input.txt, etc) and add translations for each line after the "=" sign.  
-[TODO] The text in msbe_input is automatically wordwrapped, but a "|" can be used to force a line break.  
+The text in msbe_input is automatically wordwrapped, but a "|" can be used to force a line break.  
 To blank out a line, use a single "!". If just left empty, the line will be left untranslated.  
 Comments can be added at the end of lines by using #  
 ## Image Editing
