@@ -33,8 +33,9 @@ def extract(iso, msbe, movie, tpl):
         import extract_movie
         extract_movie.run()
     if all or tpl:
-        import extract_tpl
-        extract_tpl.run()
+        wii.extractARC("data/extract/DATA/files/lytdemo/exp_data/", "data/extract_TPL/")
+        common.copyFolder("data/extract/DATA/files/textures/", "data/extract_TPL/textures/")
+        wii.extractTPL("data/extract_TPL/", "data/out_TPL/")
 
 
 @common.cli.command()
