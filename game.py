@@ -29,8 +29,11 @@ def writeUTFString(f, s, maxlen):
 
 def removeStringCode(s):
     codes = ""
-    while s.startswith("%") and s.find("]") > 0:
-        split = s.split("]", 1)
+    while s.startswith("%") and s.find("]") > 0 and not s.startswith("%_d["):
+        if s.startswith("%_tr") or s.startswith("%_te"):
+            split = [s[:4], s[4:]]
+        else:
+            split = s.split("]", 1)
         codes += split[0] + "]"
         s = split[1]
     return s, codes

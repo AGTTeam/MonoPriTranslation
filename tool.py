@@ -6,7 +6,7 @@ import pyimgur
 import requests
 from hacktools import common, wii
 
-version = "1.2.4"
+version = "1.2.5"
 isofile = "data/disc.iso"
 infolder = "data/extract/"
 outfolder = "data/repack/"
