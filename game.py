@@ -34,6 +34,7 @@ def removeStringCode(s):
             split = [s[:4], s[4:]]
         else:
             split = s.split("]", 1)
-        codes += split[0] + "]"
+            split[0] += "]"
+        codes += split[0]
         s = split[1]
     return s, codes
