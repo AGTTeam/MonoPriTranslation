@@ -87,7 +87,8 @@ def run():
                         if newutfstr == "":
                             game.writeUTFString(f, utfstr, -1)
                         else:
-                            newutfstr = common.wordwrap(newutfstr, glyphs, 482, None, 26)
+                            if "%_" not in newutfstr:
+                                newutfstr = common.wordwrap(newutfstr, glyphs, 482, None, 26)
                             game.writeUTFString(f, codes + newutfstr, -1)
                             if dataoffsets[i] > 0:
                                 pos = f.tell()
