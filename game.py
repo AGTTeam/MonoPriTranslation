@@ -14,11 +14,11 @@ def readUTFString(f):
         else:
             strlen += 1
     f.seek(pos)
-    return f.read(strlen).decode("utf-8").replace("\n", "|").replace("\r", ""), strlen
+    return f.read(strlen).decode("utf-8").replace("\n", "|").replace("\r", "").replace("=", "<3D>"), strlen
 
 
 def writeUTFString(f, s, maxlen):
-    encoded = s.replace("|", "\n").encode("utf-8")
+    encoded = s.replace("|", "\n").replace("<3D>", "=").encode("utf-8")
     if maxlen != -1 and len(encoded) > maxlen:
         common.logError("String", s, "is too long.")
         encoded = encoded[:maxlen]

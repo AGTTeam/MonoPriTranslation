@@ -3,7 +3,7 @@ import game
 from hacktools import common
 
 
-def run():
+def run(speaker=False):
     infolder = "data/extract/DATA/files/"
     outfile = "data/msbe_output.txt"
 
@@ -68,7 +68,7 @@ def run():
                     utfstr, codes = game.removeStringCode(utfstr)
                     f.seek(1, 1)
                     common.logDebug(strings[i][1], strings[i][2], utfstr)
-                    if "%_mk" in codes:
+                    if "%_mk" in codes and speaker:
                         speakerid = codes.split("%_mk[")[1].split("]")[0]
                         out.write(utfstr + "=#" + speakerid + "\n")
                     else:

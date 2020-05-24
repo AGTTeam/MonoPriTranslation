@@ -19,3 +19,6 @@ Comments can be added at the end of lines by using #
 Rename the out\_\* folders to work\_\* (out_TPL to work_TPL, etc).  
 Edit the images in the work folder(s).  
 If an image doesn't require repacking, it should be deleted from the work folder.  
+## Smartcat import
+To import the translate lines, download the .csv files from Smartcat (Export -> Special Formats -> Multilingual CSV) and put them in the data folder, then run `tool smartcat`.  
+Note that this will override the msbe_input.txt file.  

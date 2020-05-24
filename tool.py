@@ -1,12 +1,14 @@
+import codecs
+import csv
 import filecmp
 import os
-import click
 import time
+import click
 import pyimgur
 import requests
 from hacktools import common, wii
 
-version = "1.2.6"
+version = "1.3.0"
 isofile = "data/disc.iso"
 infolder = "data/extract/"
 outfolder = "data/repack/"
@@ -22,13 +24,14 @@ xmlfile = "data/patch/riivolution/monopri.xml"
 @click.option("--msbe", is_flag=True, default=False)
 @click.option("--movie", is_flag=True, default=False)
 @click.option("--tpl", is_flag=True, default=False)
-def extract(iso, msbe, movie, tpl):
+@click.option("--speaker", is_flag=True, default=False)
+def extract(iso, msbe, movie, tpl, speaker):
     all = not iso and not msbe and not movie and not tpl
     if all or iso:
         wii.extractIso(isofile, infolder, outfolder)
     if all or msbe:
         import extract_msbe
-        extract_msbe.run()
+        extract_msbe.run(speaker)
     if all or movie:
         import extract_movie
         extract_movie.run()
@@ -99,14 +102,76 @@ def generatepo(clientid):
             while not uploaded:
                 try:
                     image = im.upload_image(tploriginal + file, title="file")
-                    f.writeLine('#. ' + image.link)
-                    f.writeLine('msgid "' + file.split("/")[2] + '"')
-                    f.writeLine('msgstr ""')
-                    f.writeLine('')
+                    f.writeLine("#. " + image.link)
+                    f.writeLine("msgid \"" + file.split("/")[2] + "\"")
+                    f.writeLine("msgstr \"\"")
+                    f.writeLine("")
                     uploaded = True
                     time.sleep(30)
                 except requests.HTTPError:
                     time.sleep(300)
+    common.logMessage("Done!")
+
+
+@common.cli.command()
+def smartcat():
+    click.confirm("Import Smartcat CSV will override the msbe_input.txt file, are you sure?", abort=True)
+    common.logMessage("Importing Smartcat CSV ...")
+    infiles = ["data/msbe_output (rearranged).csv", "data/msbe_events.csv", "data/msbe_system.csv"]
+    section = {}
+    commonsection = {}
+    current = ""
+    for file in infiles:
+        with open(file, newline="", encoding="utf-8") as csvfile:
+            rows = csv.reader(csvfile, delimiter=",", quotechar="\"")
+            for row in rows:
+                orig = row[0]
+                trans = row[1]
+                if orig == "ja" or ".png" in orig or "youtube.com" in orig or orig == "Table of Contents:" or orig == "!Images":
+                    continue
+                if orig.startswith("("):
+                    orig = orig.split(") ", 1)[1]
+                if orig != "":
+                    if orig.startswith("!FILE:"):
+                        current = orig.split(",")[0].replace("!FILE:", "")
+                        section[current] = {}
+                    elif current != "":
+                        if orig in section[current]:
+                            section[current][orig].append(trans)
+                        else:
+                            section[current][orig] = [trans]
+                        if orig in commonsection:
+                            commonsection[orig].append(trans)
+                        else:
+                            commonsection[orig] = [trans]
+    with codecs.open("data/msbe_output.txt", "r", "utf-8") as fin:
+        with codecs.open("data/msbe_input.txt", "w", "utf-8") as f:
+            sectionname = ""
+            for line in fin:
+                line = line.rstrip("\r\n").replace("\ufeff", "")
+                if line.startswith("!FILE:"):
+                    sectionname = line.replace("!FILE:", "")
+                    if sectionname not in section:
+                        common.logWarning("Section", sectionname, "not found")
+                        sectionname = ""
+                    else:
+                        f.write("!FILE:" + sectionname + "\n")
+                elif sectionname != "":
+                    line = line.replace("=", "")
+                    sectionline = line
+                    if line not in section[sectionname]:
+                        if line.strip() in section[sectionname]:
+                            sectionline = line.strip()
+                        elif line in commonsection:
+                            section[sectionname][line] = commonsection[line]
+                        elif line.replace("<3D>", "=") in section[sectionname]:
+                            sectionline = line.replace("<3D>", "=")
+                    if sectionline in section[sectionname]:
+                        f.write(line + "=" + section[sectionname][sectionline][0] + "\n")
+                        if len(section[sectionname][sectionline]) > 1:
+                            section[sectionname][sectionline].pop()
+                    else:
+                        common.logWarning("Line \"" + line + "\" in section", sectionname, "not found")
     common.logMessage("Done!")
 
 
