@@ -8,7 +8,7 @@ import pyimgur
 import requests
 from hacktools import common, wii
 
-version = "1.3.0"
+version = "1.3.1"
 isofile = "data/disc.iso"
 infolder = "data/extract/"
 outfolder = "data/repack/"
@@ -113,13 +113,27 @@ def generatepo(clientid):
     common.logMessage("Done!")
 
 
+def cleanSection(section):
+    for str in section:
+        newlist = []
+        for trans in section[str]:
+            if trans != "":
+                newlist.append(trans)
+        if len(newlist) == 0:
+            section[str] = [""]
+        else:
+            section[str] = newlist
+    return section
+
+
 @common.cli.command()
 def smartcat():
-    click.confirm("Import Smartcat CSV will override the msbe_input.txt file, are you sure?", abort=True)
+    click.confirm("Importing Smartcat CSV will override the msbe_input.txt file, are you sure?", abort=True)
     common.logMessage("Importing Smartcat CSV ...")
-    infiles = ["data/msbe_output (rearranged).csv", "data/msbe_events.csv", "data/msbe_system.csv"]
+    # Read the lines from the CSV files
+    infiles = ["data/msbe_output_rearranged.csv", "data/msbe_events.csv", "data/msbe_system.csv"]
     section = {}
-    commonsection = {}
+    commons = {}
     current = ""
     for file in infiles:
         with open(file, newline="", encoding="utf-8") as csvfile:
@@ -140,38 +154,44 @@ def smartcat():
                             section[current][orig].append(trans)
                         else:
                             section[current][orig] = [trans]
-                        if orig in commonsection:
-                            commonsection[orig].append(trans)
+                        if orig in commons:
+                            commons[orig].append(trans)
                         else:
-                            commonsection[orig] = [trans]
+                            commons[orig] = [trans]
+    # Clean up empty lines that have translations somewhere else
+    commons = cleanSection(commons)
+    for name in section:
+        section[name] = cleanSection(section[name])
+    # Export everything to msbe_input following msbe_output for ordering
     with codecs.open("data/msbe_output.txt", "r", "utf-8") as fin:
         with codecs.open("data/msbe_input.txt", "w", "utf-8") as f:
-            sectionname = ""
+            current = ""
             for line in fin:
                 line = line.rstrip("\r\n").replace("\ufeff", "")
                 if line.startswith("!FILE:"):
-                    sectionname = line.replace("!FILE:", "")
-                    if sectionname not in section:
-                        common.logWarning("Section", sectionname, "not found")
-                        sectionname = ""
+                    current = line.replace("!FILE:", "")
+                    if current not in section:
+                        common.logWarning("Section", current, "not found")
+                        current = ""
                     else:
-                        f.write("!FILE:" + sectionname + "\n")
-                elif sectionname != "":
+                        f.write("!FILE:" + current + "\n")
+                elif current != "":
                     line = line.replace("=", "")
                     sectionline = line
-                    if line not in section[sectionname]:
-                        if line.strip() in section[sectionname]:
-                            sectionline = line.strip()
-                        elif line in commonsection:
-                            section[sectionname][line] = commonsection[line]
-                        elif line.replace("<3D>", "=") in section[sectionname]:
+                    if line not in section[current]:
+                        if line.strip(" 　") in section[current] or line.strip(" 　") in commons:
+                            sectionline = line.strip(" 　")
+                        elif line.replace("<3D>", "=") in section[current] or line.replace("<3D>", "=") in commons:
                             sectionline = line.replace("<3D>", "=")
-                    if sectionline in section[sectionname]:
-                        f.write(line + "=" + section[sectionname][sectionline][0] + "\n")
-                        if len(section[sectionname][sectionline]) > 1:
-                            section[sectionname][sectionline].pop()
+                    if sectionline not in section[current] and sectionline in commons:
+                        section[current][sectionline] = commons[sectionline]
+                    if sectionline in section[current]:
+                        f.write(line + "=" + section[current][sectionline][0] + "\n")
+                        if len(section[current][sectionline]) > 1:
+                            section[current][sectionline].pop()
                     else:
-                        common.logWarning("Line \"" + line + "\" in section", sectionname, "not found")
+                        f.write(line + "=\n")
+                        common.logWarning("Line \"" + sectionline + "\" in section", current, "not found")
     common.logMessage("Done!")
 
 

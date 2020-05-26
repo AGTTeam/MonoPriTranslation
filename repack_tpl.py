@@ -6,6 +6,7 @@ def run():
     workfolder = "data/work_TPL/"
     outfolder = "data/repack/DATA/files/"
     outfolderarc = outfolder + "lytdemo/exp_data/"
+    replacefolder = "data/replace_TPL/"
     extractfolder = "data/extract_TPL/"
     repackfolder = "data/repack_TPL/"
     common.makeFolder(repackfolder)
@@ -32,6 +33,8 @@ def run():
             common.execute("wimgt -o ENCODE " + workfolder + file + " -D " + folder + archive + "/" + tplfile + " -x TPL." + format, False)
 
     common.logMessage("Repacking ARC from", repackfolder, "...")
+    if os.path.isdir(replacefolder):
+        common.mergeFolder(replacefolder, repackfolder)
     files = os.listdir(repackfolder)
     for file in common.showProgress(files):
         common.logDebug("Processing", file, "...")
