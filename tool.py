@@ -8,7 +8,7 @@ import pyimgur
 import requests
 from hacktools import common, wii
 
-version = "1.3.1"
+version = "1.3.2"
 isofile = "data/disc.iso"
 infolder = "data/extract/"
 outfolder = "data/repack/"
@@ -44,13 +44,14 @@ def extract(iso, msbe, movie, tpl, speaker):
 @common.cli.command()
 @click.option("--no-patch", is_flag=True, default=False)
 @click.option("--msbe", is_flag=True, default=False)
+@click.option("--onlyquest", is_flag=True, default=False)
 @click.option("--movie", is_flag=True, default=False)
 @click.option("--tpl", is_flag=True, default=False)
-def repack(no_patch, msbe, movie, tpl):
+def repack(no_patch, msbe, onlyquest, movie, tpl):
     all = not msbe and not movie and not tpl
     if all or msbe:
         import repack_msbe
-        repack_msbe.run()
+        repack_msbe.run(onlyquest)
     if all or movie:
         import repack_movie
         repack_movie.run()

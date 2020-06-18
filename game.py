@@ -38,3 +38,12 @@ def removeStringCode(s):
         codes += split[0]
         s = split[1]
     return s, codes
+
+
+def detectTextCode(s, i=0):
+    if s[i] == "%":
+        check = s[i:i+4]
+        if check == "%_tr" or check == "%_te":
+            return 4
+        return len(s[i:].split("]", 1)[0]) + 1
+    return 0
