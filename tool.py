@@ -8,7 +8,7 @@ import pyimgur
 import requests
 from hacktools import common, wii
 
-version = "1.3.2"
+version = "1.3.3"
 isofile = "data/disc.iso"
 infolder = "data/extract/"
 outfolder = "data/repack/"
@@ -129,10 +129,10 @@ def cleanSection(section):
 
 @common.cli.command()
 def smartcat():
-    click.confirm("Importing Smartcat CSV will override the msbe_input.txt file, are you sure?", abort=True)
+    click.confirm("Importing Smartcat CSV will override the msbe_input.txt and movie_input.txt files, are you sure?", abort=True)
     common.logMessage("Importing Smartcat CSV ...")
     # Read the lines from the CSV files
-    infiles = ["data/msbe_output_rearranged.csv", "data/msbe_events.csv", "data/msbe_system.csv"]
+    infiles = ["data/msbe_output_rearranged.csv", "data/msbe_events.csv", "data/msbe_system.csv", "data/movie.csv"]
     section = {}
     commons = {}
     current = ""
@@ -164,35 +164,43 @@ def smartcat():
     for name in section:
         section[name] = cleanSection(section[name])
     # Export everything to msbe_input following msbe_output for ordering
-    with codecs.open("data/msbe_output.txt", "r", "utf-8") as fin:
-        with codecs.open("data/msbe_input.txt", "w", "utf-8") as f:
-            current = ""
-            for line in fin:
-                line = line.rstrip("\r\n").replace("\ufeff", "")
-                if line.startswith("!FILE:"):
-                    current = line.replace("!FILE:", "")
-                    if current not in section:
-                        common.logWarning("Section", current, "not found")
-                        current = ""
-                    else:
-                        f.write("!FILE:" + current + "\n")
-                elif current != "":
-                    line = line.replace("=", "")
-                    sectionline = line
-                    if line not in section[current]:
-                        if line.strip(" 　") in section[current] or line.strip(" 　") in commons:
-                            sectionline = line.strip(" 　")
-                        elif line.replace("<3D>", "=") in section[current] or line.replace("<3D>", "=") in commons:
-                            sectionline = line.replace("<3D>", "=")
-                    if sectionline not in section[current] and sectionline in commons:
-                        section[current][sectionline] = commons[sectionline]
-                    if sectionline in section[current]:
-                        f.write(line + "=" + section[current][sectionline][0] + "\n")
-                        if len(section[current][sectionline]) > 1:
-                            section[current][sectionline].pop()
-                    else:
-                        f.write(line + "=\n")
-                        common.logWarning("Line \"" + sectionline + "\" in section", current, "not found")
+    outputfiles = ["data/msbe_output.txt", "data/movie_output.txt"]
+    inputfiles = ["data/msbe_input.txt", "data/movie_input.txt"]
+    for i in range(len(outputfiles)):
+        with codecs.open(outputfiles[i], "r", "utf-8") as fin:
+            with codecs.open(inputfiles[i], "w", "utf-8") as f:
+                current = ""
+                for line in fin:
+                    line = line.rstrip("\r\n").replace("\ufeff", "")
+                    if line.startswith("!FILE:"):
+                        current = line.replace("!FILE:", "")
+                        if current not in section:
+                            common.logWarning("Section", current, "not found")
+                            current = ""
+                        else:
+                            f.write("!FILE:" + current + "\n")
+                    elif current != "":
+                        line = line.replace("=", "")
+                        linestart = ""
+                        if i == 1:
+                            linesplit = line.split(":", 2)
+                            linestart = linesplit[0] + ":" + linesplit[1] + ":"
+                            line = linesplit[2]
+                        sectionline = line
+                        if line not in section[current]:
+                            if line.strip(" 　") in section[current] or line.strip(" 　") in commons:
+                                sectionline = line.strip(" 　")
+                            elif line.replace("<3D>", "=") in section[current] or line.replace("<3D>", "=") in commons:
+                                sectionline = line.replace("<3D>", "=")
+                        if sectionline not in section[current] and sectionline in commons:
+                            section[current][sectionline] = commons[sectionline]
+                        if sectionline in section[current]:
+                            f.write(linestart + line + "=" + section[current][sectionline][0] + "\n")
+                            if len(section[current][sectionline]) > 1:
+                                section[current][sectionline].pop()
+                        else:
+                            f.write(linestart + line + "=\n")
+                            common.logWarning("Line \"" + sectionline + "\" in section", current, "not found")
     common.logMessage("Done!")
 
 
