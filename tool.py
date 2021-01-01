@@ -8,11 +8,14 @@ import pyimgur
 import requests
 from hacktools import common, wii
 
-version = "1.3.3"
+version = "1.3.4"
 isofile = "data/disc.iso"
 infolder = "data/extract/"
 outfolder = "data/repack/"
 replacefolder = "data/replace/"
+fontin = "data/font_input.txt"
+fontout = "data/font_output.txt"
+fontfile = "data/extract/DATA/files/resfont/font_jp.brfnt"
 patchin = "data/extract/DATA/files/"
 patchout = "data/repack/DATA/files/"
 patchfolder = "data/patch/monopri/"
@@ -24,9 +27,10 @@ xmlfile = "data/patch/riivolution/monopri.xml"
 @click.option("--msbe", is_flag=True, default=False)
 @click.option("--movie", is_flag=True, default=False)
 @click.option("--tpl", is_flag=True, default=False)
+@click.option("--fnt", is_flag=True, default=False)
 @click.option("--speaker", is_flag=True, default=False)
-def extract(iso, msbe, movie, tpl, speaker):
-    all = not iso and not msbe and not movie and not tpl
+def extract(iso, msbe, movie, tpl, fnt, speaker):
+    all = not iso and not msbe and not movie and not fnt and not tpl
     if all or iso:
         wii.extractIso(isofile, infolder, outfolder)
     if all or msbe:
@@ -35,6 +39,8 @@ def extract(iso, msbe, movie, tpl, speaker):
     if all or movie:
         import extract_movie
         extract_movie.run()
+    if all or fnt:
+        wii.extractFontData(fontfile, fontout)
     if all or tpl:
         wii.extractARC("data/extract/DATA/files/lytdemo/exp_data/", "data/extract_TPL/")
         common.copyFolder("data/extract/DATA/files/textures/", "data/extract_TPL/textures/")
@@ -47,9 +53,14 @@ def extract(iso, msbe, movie, tpl, speaker):
 @click.option("--onlyquest", is_flag=True, default=False)
 @click.option("--movie", is_flag=True, default=False)
 @click.option("--tpl", is_flag=True, default=False)
-def repack(no_patch, msbe, onlyquest, movie, tpl):
-    all = not msbe and not movie and not tpl
-    if all or msbe:
+@click.option("--fnt", is_flag=True, default=False)
+def repack(no_patch, msbe, onlyquest, movie, tpl, fnt):
+    all = not msbe and not movie and not tpl and not fnt
+    if all or fnt or msbe:
+        fontfilein = fontfile
+        if os.path.isfile(fontfile.replace("/extract/", "/replace/")):
+            fontfilein = fontfilein.replace("/extract/", "/replace/")
+        wii.repackFontData(fontfilein, fontfile.replace("/extract/", "/repack/"), fontin)
         import repack_msbe
         repack_msbe.run(onlyquest)
     if all or movie:
