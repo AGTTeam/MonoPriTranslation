@@ -88,11 +88,11 @@
         },
         "hacktools": {
             "hashes": [
-                "sha256:2aa097dad6fc4264af708356c8e18da59337dc8d2e55628754f1e7c4ed27a30a",
-                "sha256:f45d9197018fcf0f98e0bde345936d37cc9934c2abf485fb8df4528cd0b51a4b"
+                "sha256:0e034ba67dc26c914abff6df4312464cab40a8d67c4645f517f8183d442b155c",
+                "sha256:94100ed631c2c386b07299355ded959e1d7ffc48e0c6512740c5e5e6768448bf"
             ],
             "index": "pypi",
-            "version": "==0.14.1"
+            "version": "==0.14.2"
         },
         "idna": {
             "hashes": [
