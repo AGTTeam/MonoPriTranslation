@@ -8,13 +8,15 @@ import pyimgur
 import requests
 from hacktools import common, wii
 
-version = "1.3.4"
+version = "1.3.5"
 isofile = "data/disc.iso"
 infolder = "data/extract/"
 outfolder = "data/repack/"
 replacefolder = "data/replace/"
 fontin = "data/font_input.txt"
 fontout = "data/font_output.txt"
+fontimgout = "data/extract_FNT/font_jp.png"
+fontimgin = "data/work_FNT/font_jp.png"
 fontfile = "data/extract/DATA/files/resfont/font_jp.brfnt"
 patchin = "data/extract/DATA/files/"
 patchout = "data/repack/DATA/files/"
@@ -41,6 +43,8 @@ def extract(iso, msbe, movie, tpl, fnt, speaker):
         extract_movie.run()
     if all or fnt:
         wii.extractFontData(fontfile, fontout)
+        common.makeFolder("data/extract_FNT/")
+        wii.extractBRFNT(fontfile, fontimgout)
     if all or tpl:
         wii.extractARC("data/extract/DATA/files/lytdemo/exp_data/", "data/extract_TPL/")
         common.copyFolder("data/extract/DATA/files/textures/", "data/extract_TPL/textures/")
@@ -60,7 +64,9 @@ def repack(no_patch, msbe, onlyquest, movie, tpl, fnt):
         fontfilein = fontfile
         if os.path.isfile(fontfile.replace("/extract/", "/replace/")):
             fontfilein = fontfilein.replace("/extract/", "/replace/")
-        wii.repackFontData(fontfilein, fontfile.replace("/extract/", "/repack/"), fontin)
+        fontfileout = fontfile.replace("/extract/", "/repack/")
+        wii.repackFontData(fontfilein, fontfileout, fontin)
+        wii.repackBRFNT(fontfileout, fontimgin)
         import repack_msbe
         repack_msbe.run(onlyquest)
     if all or movie:

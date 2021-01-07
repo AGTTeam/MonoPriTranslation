@@ -8,6 +8,7 @@ Run `tool extract` to extract everything and `tool repack` to repack after editi
 Run `tool extract --help` or `tool repack --help` for more info.  
 ## Run from source
 Install [Python 3.8](https://www.python.org/downloads/) and pipenv.  
+Download [brfnt2tpl.exe](http://wiki.tockdom.com/wiki/Brfnt2tpl).  
 Run `pipenv install`.  
 Run the tool with `pipenv run tool.py` or build with `pipenv run pyinstaller tool.spec`.  
 ## Text Editing

@@ -5,7 +5,7 @@ block_cipher = None
 
 a = Analysis(['tool.py'],
              pathex=['D:\\roms\\monopri'],
-             binaries=[],
+             binaries=[('brfnt2tpl.exe', '.')],
              datas=[],
              hiddenimports=['pkg_resources.py2_warn'],
              hookspath=[],
