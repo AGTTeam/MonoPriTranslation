@@ -97,7 +97,7 @@ def run(onlyquest):
                             if newutfstr == "":
                                 game.writeUTFString(f, utfstr, -1)
                             else:
-                                newutfstr = common.wordwrap(newutfstr, glyphs, config["wordwrap_text"], game.detectTextCode, 26)
+                                newutfstr = common.wordwrap(newutfstr, glyphs, config["wordwrap_text"], game.detectTextCode, 26, strip=False)
                                 game.writeUTFString(f, codes + newutfstr, -1)
                                 if dataoffsets[i] > 0:
                                     pos = f.tell()
@@ -138,7 +138,7 @@ def run(onlyquest):
                     if newutfstr == "":
                         game.writeUTFString(f, utfstr, -1)
                     else:
-                        newutfstr = common.wordwrap(newutfstr, glyphs, config["wordwrap_quest" + str(j)], game.detectTextCode, 26)
+                        newutfstr = common.wordwrap(newutfstr, glyphs, config["wordwrap_quest" + str(j)], game.detectTextCode, 26, strip=False)
                         game.writeUTFString(f, codes + newutfstr, -1)
                     j += 1
                     if j > 3:
