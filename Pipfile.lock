@@ -88,11 +88,11 @@
         },
         "hacktools": {
             "hashes": [
-                "sha256:0f8137b14783a2665986bba2f987057141081112bdfb970a683548575cb668fe",
-                "sha256:64c207081f0078bede75bfa966dd9b078ef9745149d87a34a5e0b442f9206fad"
+                "sha256:9f122f2c4d9b0d727dff35328d61fec9db9054021e0ebdda67e58e959c20a9bf",
+                "sha256:efb610657b659ec096fbbf3187affc26e8ba5813ff2ac3411efb4b6c62a292aa"
             ],
             "index": "pypi",
-            "version": "==0.15.5"
+            "version": "==0.15.6"
         },
         "idna": {
             "hashes": [
@@ -235,10 +235,10 @@
         },
         "pyinstaller": {
             "hashes": [
-                "sha256:954ae81de9a4bc096ff02433b3e245b9272fe53f27cac319e71fe7540952bd3d"
+                "sha256:f5c0eeb2aa663cce9a5404292c0195011fa500a6501c873a466b2e8cad3c950c"
             ],
             "index": "pypi",
-            "version": "==4.1"
+            "version": "==4.2"
         },
         "pyinstaller-hooks-contrib": {
             "hashes": [

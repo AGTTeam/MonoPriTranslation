@@ -28,7 +28,7 @@ def run(onlyquest):
     glyphs = wii.getFontGlyphs(fontfile)
     with codecs.open(infile, "r", "utf-8") as msbe:
         if not onlyquest:
-            commonsection = common.getSection(msbe, "COMMON")
+            commonsection = common.getSection(msbe, "COMMON", justone=False)
             chartot, transtot = common.getSectionPercentage(commonsection)
             files = common.getFiles(infolder + "script/", ".bscr") + common.getFiles(infolder + "text/", ".bin")
             for file in common.showProgress(files):
