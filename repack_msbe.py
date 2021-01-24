@@ -28,13 +28,12 @@ def run(onlyquest):
     glyphs = wii.getFontGlyphs(fontfile)
     with codecs.open(infile, "r", "utf-8") as msbe:
         if not onlyquest:
+            commonsection = common.getSection(msbe, "COMMON")
+            chartot, transtot = common.getSectionPercentage(commonsection)
             files = common.getFiles(infolder + "script/", ".bscr") + common.getFiles(infolder + "text/", ".bin")
             for file in common.showProgress(files):
                 subfolder = ("script/" if file.endswith(".bscr") else "text/")
                 section = common.getSection(msbe, file)
-                if len(section) == 0:
-                    common.copyFile(infolder + subfolder + file, outfolder + subfolder + file)
-                    continue
                 chartot, transtot = common.getSectionPercentage(section, chartot, transtot)
                 common.logDebug("Processing", file, "...")
                 with common.Stream(infolder + subfolder + file, "rb", False) as fin:
@@ -94,6 +93,8 @@ def run(onlyquest):
                                     del section[utfstripped]
                                 if newutfstr == "!":
                                     newutfstr = " "
+                            elif utfstripped in commonsection:
+                                newutfstr = commonsection[utfstripped][0]
                             if newutfstr == "":
                                 game.writeUTFString(f, utfstr, -1)
                             else:

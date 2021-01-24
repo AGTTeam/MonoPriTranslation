@@ -8,7 +8,7 @@ import pyimgur
 import requests
 from hacktools import common, wii
 
-version = "1.3.8"
+version = "1.3.9"
 isofile = "data/disc.iso"
 infolder = "data/extract/"
 outfolder = "data/repack/"
@@ -31,13 +31,14 @@ xmlfile = "data/patch/riivolution/monopri.xml"
 @click.option("--tpl", is_flag=True, default=False)
 @click.option("--fnt", is_flag=True, default=False)
 @click.option("--speaker", is_flag=True, default=False)
-def extract(iso, msbe, movie, tpl, fnt, speaker):
+@click.option("--merge", is_flag=True, default=False)
+def extract(iso, msbe, movie, tpl, fnt, speaker, merge):
     all = not iso and not msbe and not movie and not fnt and not tpl
     if all or iso:
         wii.extractIso(isofile, infolder, outfolder)
     if all or msbe:
         import extract_msbe
-        extract_msbe.run(speaker)
+        extract_msbe.run(speaker, merge)
     if all or movie:
         import extract_movie
         extract_movie.run()
@@ -129,6 +130,26 @@ def generatepo(clientid):
                 except requests.HTTPError:
                     time.sleep(300)
     common.logMessage("Done!")
+
+
+@common.cli.command()
+def dupe():
+    seen = {}
+    sections = common.getSections("data/msbe_input.txt")
+    for section in sections:
+        if section == "quest.bin":
+            continue
+        for line in sections[section]:
+            translation = sections[section][line][0]
+            if line not in seen:
+                seen[line] = [translation, section, 1]
+            else:
+                seen[line][2] += 1
+                if translation != seen[line][0]:
+                    common.logMessage("{}: {}={} ({} @{})".format(section, line, translation, seen[line][0], seen[line][1]))
+    for line in seen:
+        if seen[line][2] > 2:
+            common.logMessage("Dupe", seen[line][2], line + "=")
 
 
 def cleanSection(section):

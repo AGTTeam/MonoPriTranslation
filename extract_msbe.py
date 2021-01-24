@@ -1,17 +1,33 @@
 import codecs
+import os
 import game
 from hacktools import common
 
 
-def run(speaker=False):
+def run(speaker=False, merge=False):
     infolder = "data/extract/DATA/files/"
     outfile = "data/msbe_output.txt"
+    commonfile = "data/common.txt"
+
+    commonstr = {}
+    # Read common strings from another file
+    if os.path.isfile(commonfile):
+        with codecs.open(commonfile, "r", "utf-8") as commonf:
+            commonstr = common.getSection(commonf, "COMMON")
+    if merge:
+        mergescript = codecs.open("data/msbe_input.txt", "r", "utf-8")
 
     common.logMessage("Extracting MSBE to", outfile, "...")
     with codecs.open(outfile, "w", "utf-8") as out:
+        if len(commonstr) > 0:
+            out.write("!FILE:COMMON\n")
+            for s in commonstr:
+                out.write(s + "=\n")
         files = common.getFiles(infolder + "script/", ".bscr") + common.getFiles(infolder + "text/", ".bin")
         for file in common.showProgress(files):
             common.logDebug("Processing", file, "...")
+            if merge:
+                mergesection = common.getSection(mergescript, file)
             with common.Stream(infolder + ("script/" if file.endswith(".bscr") else "text/") + file, "rb", False) as f:
                 header = f.readString(4)
                 if header == "SCBE":
@@ -68,11 +84,17 @@ def run(speaker=False):
                     utfstr, codes = game.removeStringCode(utfstr)
                     f.seek(1, 1)
                     common.logDebug(strings[i][1], strings[i][2], utfstr)
-                    if "%_mk" in codes and speaker:
-                        speakerid = codes.split("%_mk[")[1].split("]")[0]
-                        out.write(utfstr + "=#" + speakerid + "\n")
-                    else:
-                        out.write(utfstr + "=\n")
+                    if utfstr not in commonstr:
+                        if "%_mk" in codes and speaker:
+                            speakerid = codes.split("%_mk[")[1].split("]")[0]
+                            out.write(utfstr + "=#" + speakerid + "\n")
+                        else:
+                            out.write(utfstr + "=")
+                            if merge and utfstr in mergesection:
+                                out.write(mergesection[utfstr].pop(0))
+                                if len(mergesection[utfstr]) == 0:
+                                    del mergesection[utfstr]
+                            out.write("\n")
         # Separate handling for quest.bin
         with common.Stream(infolder + "quest/quest.bin", "rb") as f:
             out.write("!FILE:quest.bin\n")
