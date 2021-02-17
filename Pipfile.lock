@@ -88,11 +88,11 @@
         },
         "hacktools": {
             "hashes": [
-                "sha256:9f122f2c4d9b0d727dff35328d61fec9db9054021e0ebdda67e58e959c20a9bf",
-                "sha256:efb610657b659ec096fbbf3187affc26e8ba5813ff2ac3411efb4b6c62a292aa"
+                "sha256:76b353aab87f88960653135d11ac0e019924ad9569c90198bb20045d4350e29c",
+                "sha256:7c16bbd302b8e73cbf4421c1452c18ead6a3d511035c5c85ec84038cf8de1da2"
             ],
             "index": "pypi",
-            "version": "==0.15.6"
+            "version": "==0.16.3"
         },
         "idna": {
             "hashes": [
@@ -200,17 +200,17 @@
         },
         "tqdm": {
             "hashes": [
-                "sha256:4621f6823bab46a9cc33d48105753ccbea671b68bab2c50a9f0be23d4065cb5a",
-                "sha256:fe3d08dd00a526850568d542ff9de9bbc2a09a791da3c334f3213d8d0bbbca65"
+                "sha256:11d544652edbdfc9cc41aa4c8a5c166513e279f3f2d9f1a9e1c89935b51de6ff",
+                "sha256:a89be573bfddb81bb0b395a416d5e55e3ecc73ce95a368a4f6360bedea33195e"
             ],
-            "version": "==4.56.0"
+            "version": "==4.56.2"
         },
         "urllib3": {
             "hashes": [
-                "sha256:19188f96923873c92ccb987120ec4acaa12f0461fa9ce5d3d0772bc965a39e08",
-                "sha256:d8ff90d979214d7b4f8ce956e80f4028fc6860e4431f731ea4a8c08f23f99473"
+                "sha256:1b465e494e3e0d8939b50680403e3aedaa2bc434b7d5af64dfd3c958d7f5ae80",
+                "sha256:de3eedaad74a2683334e282005cd8d7f22f4d55fa690a2a1020a416cb0a47e73"
             ],
-            "version": "==1.26.2"
+            "version": "==1.26.3"
         }
     },
     "develop": {

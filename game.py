@@ -47,3 +47,11 @@ def detectTextCode(s, i=0):
             return 4
         return len(s[i:].split("]", 1)[0]) + 1
     return 0
+
+
+def repackARC(fin, fout):
+    common.execute("wszst -o CREATE " + fin + " -D " + fout, False)
+    # Blank out the 0xCC bytes that are different from the original
+    with common.Stream(fout, "r+b") as f:
+        f.seek(16)
+        f.writeZero(16)

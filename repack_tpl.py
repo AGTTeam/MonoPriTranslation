@@ -1,4 +1,5 @@
 import os
+import game
 from hacktools import common, wii
 
 
@@ -6,9 +7,9 @@ def run():
     workfolder = "data/work_TPL/"
     outfolder = "data/repack/DATA/files/"
     outfolderarc = outfolder + "lytdemo/exp_data/"
-    replacefolder = "data/replace_TPL/"
     extractfolder = "data/extract_TPL/"
     repackfolder = "data/repack_TPL/"
+    logofile = repackfolder + "SP030_0000.arc/root/blyt/SP030_0000.brlyt"
     common.makeFolder(repackfolder)
 
     common.logMessage("Copying original TPL files...")
@@ -31,15 +32,39 @@ def run():
         elif ".mm" not in file:
             format = "R565" if "TX900_0010" in tplfile or "TX900_0020" in tplfile else "R3"
             common.execute("wimgt -o ENCODE " + workfolder + file + " -D " + folder + archive + "/" + tplfile + " -x TPL." + format, False)
+    # Copy tweaked main screen layout file
+    if os.path.isfile("data/brlyt/SP030_0000.brlyt"):
+        common.copyFile("data/brlyt/SP030_0000.brlyt", logofile)
+    common.logMessage("Done!")
 
     common.logMessage("Repacking ARC from", repackfolder, "...")
-    if os.path.isdir(replacefolder):
-        common.mergeFolder(replacefolder, repackfolder)
     files = os.listdir(repackfolder)
     for file in common.showProgress(files):
         common.logDebug("Processing", file, "...")
-        common.execute("wszst -o CREATE " + repackfolder + file + " -D " + outfolderarc + file, False)
-        # Blank out the 0xCC bytes that are different from the original
-        with common.Stream(outfolderarc + file, "r+b") as f:
-            f.seek(16)
-            f.writeZero(16)
+        game.repackARC(repackfolder + file, outfolderarc + file)
+    common.logMessage("Done!")
+    # Copy tweaked 3d model texture
+    common.logMessage("Repacking 3D from", "data/work_3D", "...")
+    common.copyFolder("data/extract_3D", "data/repack_3D")
+    common.copyFile("data/work_3D/ID002_0000.brres", "data/repack_3D/item_od_all.arc/pac/ID002_0000.brres")
+    game.repackARC("data/repack_3D/item_od_all.arc", "data/repack/DATA/files/3d/map/item_od_all.arc")
+    common.logMessage("Done!")
+    # Copy particle effects
+    common.logMessage("Repacking EFF from", "data/work_EFF", "...")
+    common.copyFolder("data/extract_EFF", "data/repack_EFF")
+    common.makeFolder("data/repack_BREFT")
+    files = common.getFiles("data/work_EFF", ".png")
+    for file in common.showProgress(files):
+        filesplit = file.split("/")
+        arcfile = filesplit[1]
+        breftfile = filesplit[2]
+        pngfile = filesplit[3]
+        common.copyFolder("data/extract_BREFT/" + arcfile + "/" + breftfile, "data/repack_BREFT/" + arcfile + "/" + breftfile)
+        common.execute("wimgt -o ENCODE data/work_EFF" + file + " -D " + "data/repack_BREFT/" + arcfile + "/" + breftfile + "/files/" + pngfile.replace(".png", "") + " -x BTIMG", False)
+        common.execute("wszst -o CREATE " + "data/repack_BREFT/" + arcfile + "/" + breftfile + " -D " + "data/repack_EFF/" + arcfile + "/" + arcfile.replace(".arc", "") + "/" + breftfile, False)
+    common.logMessage("Repacking ARC from", "data/repack_EFF", "...")
+    files = os.listdir("data/repack_EFF")
+    for file in common.showProgress(files):
+        common.logDebug("Processing", file, "...")
+        game.repackARC("data/repack_EFF/" + file, outfolder + "effect/" + file)
+    common.logMessage("Done!")
