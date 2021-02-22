@@ -8,7 +8,7 @@ import pyimgur
 import requests
 from hacktools import common, wii
 
-version = "1.4.0"
+version = "1.5.0"
 isofile = "data/disc.iso"
 infolder = "data/extract/"
 outfolder = "data/repack/"
@@ -18,6 +18,8 @@ fontout = "data/font_output.txt"
 fontimgout = "data/extract_FNT/font_jp.png"
 fontimgin = "data/work_FNT/font_jp.png"
 fontfile = "data/extract/DATA/files/resfont/font_jp.brfnt"
+dolin = "data/extract/DATA/sys/main.dol"
+dolout = "data/repack/DATA/sys/main.dol"
 patchin = "data/extract/DATA/files/"
 patchout = "data/repack/DATA/files/"
 patchfolder = "data/patch/monopri/"
@@ -64,7 +66,7 @@ def extract(iso, msbe, movie, tpl, fnt, speaker, merge):
 @click.option("--fnt", is_flag=True, default=False)
 def repack(no_patch, msbe, onlyquest, movie, tpl, fnt):
     all = not msbe and not movie and not tpl and not fnt
-    if all or fnt or msbe:
+    if all or fnt:
         common.logMessage("Repacking FNT from", "data/work_FNT", "...")
         fontfilein = fontfile
         if os.path.isfile(fontfile.replace("/extract/", "/replace/")):
@@ -73,9 +75,10 @@ def repack(no_patch, msbe, onlyquest, movie, tpl, fnt):
         wii.repackFontData(fontfilein, fontfileout, fontin)
         wii.repackBRFNT(fontfileout, fontimgin)
         common.logMessage("Done!")
+    if all or fnt or msbe:
         import repack_msbe
         repack_msbe.run(onlyquest)
-    if all or movie:
+    if all or fnt or movie:
         import repack_movie
         repack_movie.run()
     if all or tpl:
@@ -83,6 +86,13 @@ def repack(no_patch, msbe, onlyquest, movie, tpl, fnt):
         repack_tpl.run()
     if os.path.isdir(replacefolder):
         common.mergeFolder(replacefolder, outfolder)
+    # Patch the main.dol file
+    common.copyFile(dolin, dolout)
+    with common.Stream(dolout, "rb+", False) as f:
+        # Set the movie subtitles X position to 0 since we're doing some manual centering
+        # Change "fsubs f28,f7,f8 to fsubs f28,f8,f8"
+        f.seek(0x8CF4)  # 0x8000cfb4
+        f.writeUInt(0xef884028)
 
     if not no_patch:
         common.makeFolders(patchfolder)
@@ -90,6 +100,8 @@ def repack(no_patch, msbe, onlyquest, movie, tpl, fnt):
         common.logMessage("Creating patch folder in", patchfolder, "...")
         files = common.getFiles(patchin)
         for file in common.showProgress(files):
+            if patchout + file == dolout:
+                continue
             if not filecmp.cmp(patchin + file, patchout + file):
                 common.makeFolders(patchfolder + os.path.dirname(file))
                 common.copyFile(patchout + file, patchfolder + file)
@@ -108,6 +120,7 @@ def repack(no_patch, msbe, onlyquest, movie, tpl, fnt):
             f.writeLine('\t<patch id="monoprifolder">')
             f.writeLine('\t\t<folder external="/monopri" recursive="false"/>')
             f.writeLine('\t\t<folder external="/monopri" disc="/"/>')
+            f.writeLine('\t\t<memory offset="0x8000cfb4" value="ef884028" original="ef874028" />')
             f.writeLine('\t</patch>')
             f.writeLine('</wiidisc>')
         common.logMessage("Done!")

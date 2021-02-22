@@ -1,12 +1,13 @@
 import codecs
 import os
 import game
-from hacktools import common
+from hacktools import common, wii
 
 
 def run():
     infolder = "data/extract/DATA/files/movie/"
     outfolder = "data/repack/DATA/files/movie/"
+    fontfile = "data/repack/DATA/files/resfont/font_jp.brfnt"
     infile = "data/movie_input.txt"
     chartot = transtot = 0
 
@@ -15,6 +16,7 @@ def run():
         return
 
     common.logMessage("Repacking MOVIE from", infile, "...")
+    glyphs = wii.getFontGlyphs(fontfile)
     with codecs.open(infile, "r", "utf-8") as movie:
         files = common.getFiles(infolder, ".bin")
         for file in common.showProgress(files):
@@ -46,6 +48,7 @@ def run():
                             substart = int(timecodes[0])
                             subend = int(timecodes[1])
                             line = timecodes[2]
+                            line = common.centerLines("<<" + line.replace("|", "|<<"), glyphs, game.subcentering)
                             game.writeUTFString(f, line, -1)
                             newpos = f.tell()
                             f.seek(8 + i * 12)
@@ -80,6 +83,7 @@ def run():
                                     substart = int(timecodes[0])
                                     subend = int(timecodes[1])
                                     line = timecodes[2]
+                                line = common.centerLines("<<" + line.replace("|", "|<<"), glyphs, game.subcentering)
                             f.writeUInt(substart)
                             f.writeUInt(subend)
                             f.writeUInt(pos)

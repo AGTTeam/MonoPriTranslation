@@ -2,6 +2,7 @@ from hacktools import common
 
 queststart = 26420
 questnum = 438
+subcentering = 860
 
 
 def readUTFString(f):
