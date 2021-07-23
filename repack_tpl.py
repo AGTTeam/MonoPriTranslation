@@ -11,6 +11,7 @@ def run():
     repackfolder = "data/repack_TPL/"
     logofile = repackfolder + "SP030_0000.arc/root/blyt/SP030_0000.brlyt"
     logofile2 = repackfolder + "SP060_0020.arc/root/blyt/SP060_0020.brlyt"
+    logofile3 = repackfolder + "SP060_0030.arc/root/blyt/SP060_0030.brlyt"
     common.makeFolder(repackfolder)
 
     common.logMessage("Copying original TPL files...")
@@ -38,6 +39,8 @@ def run():
         common.copyFile("data/brlyt/SP030_0000.brlyt", logofile)
     if os.path.isfile("data/brlyt/SP060_0020.brlyt"):
         common.copyFile("data/brlyt/SP060_0020.brlyt", logofile2)
+    if os.path.isfile("data/brlyt/SP060_0030.brlyt"):
+        common.copyFile("data/brlyt/SP060_0030.brlyt", logofile3)
     common.logMessage("Done!")
 
     common.logMessage("Repacking ARC from", repackfolder, "...")
