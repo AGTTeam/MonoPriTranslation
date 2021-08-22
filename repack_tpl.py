@@ -9,9 +9,6 @@ def run():
     outfolderarc = outfolder + "lytdemo/exp_data/"
     extractfolder = "data/extract_TPL/"
     repackfolder = "data/repack_TPL/"
-    logofile = repackfolder + "SP030_0000.arc/root/blyt/SP030_0000.brlyt"
-    logofile2 = repackfolder + "SP060_0020.arc/root/blyt/SP060_0020.brlyt"
-    logofile3 = repackfolder + "SP060_0030.arc/root/blyt/SP060_0030.brlyt"
     common.makeFolder(repackfolder)
 
     common.logMessage("Copying original TPL files...")
@@ -35,12 +32,11 @@ def run():
             format = "R565" if "TX900_0010" in tplfile or "TX900_0020" in tplfile else "R3"
             common.execute("wimgt -o ENCODE " + workfolder + file + " -D " + folder + archive + "/" + tplfile + " -x TPL." + format, False)
     # Copy tweaked main screen layout file
-    if os.path.isfile("data/brlyt/SP030_0000.brlyt"):
-        common.copyFile("data/brlyt/SP030_0000.brlyt", logofile)
-    if os.path.isfile("data/brlyt/SP060_0020.brlyt"):
-        common.copyFile("data/brlyt/SP060_0020.brlyt", logofile2)
-    if os.path.isfile("data/brlyt/SP060_0030.brlyt"):
-        common.copyFile("data/brlyt/SP060_0030.brlyt", logofile3)
+    for file in common.getFiles(repackfolder, ".brlyt"):
+        filename = file.split("/")
+        filename = filename[len(filename) - 1]
+        if os.path.isfile("data/brlyt/" + filename):
+            common.copyFile("data/brlyt/" + filename, repackfolder + file)
     common.logMessage("Done!")
 
     common.logMessage("Repacking ARC from", repackfolder, "...")
