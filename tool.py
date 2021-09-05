@@ -6,9 +6,10 @@ import time
 import click
 import pyimgur
 import requests
+from zipfile import ZipFile, ZIP_DEFLATED
 from hacktools import common, wii
 
-version = "1.5.4"
+version = "1.5.5"
 isofile = "data/disc.iso"
 infolder = "data/extract/"
 outfolder = "data/repack/"
@@ -123,6 +124,25 @@ def repack(no_patch, msbe, onlyquest, movie, tpl, fnt):
             f.writeLine('\t\t<memory offset="0x8000cfb4" value="ef884028" original="ef874028" />')
             f.writeLine('\t</patch>')
             f.writeLine('</wiidisc>')
+        common.logMessage("Creating ZIP file ...")
+        with common.Stream("patcher.bat", "w") as f:
+            f.writeLine('del monopri_patched.iso')
+            f.writeLine('rmdir /s/q patch_temp')
+            f.writeLine('wit EXTRACT -o %1 patch_temp')
+            f.writeLine('xcopy patch\\monopri patch_temp\\DATA\\files /s/e/y/q')
+            f.writeLine('xcopy main.dol patch_temp\\DATA\\sys\\main.dol /y/q')
+            f.writeLine('wit COPY patch_temp monopri_patched.iso')
+            f.writeLine('rmdir /s/q patch_temp')
+        common.copyFile(dolout, "main.dol")
+        with ZipFile("data/patch.zip", "w", ZIP_DEFLATED) as zip:
+            for foldername, _, filenames in os.walk("data/patch"):
+                for filename in filenames:
+                    filepath = os.path.join(foldername, filename)
+                    zip.write(filepath, filepath[5:])
+            zip.write("main.dol")
+            zip.write("patcher.bat")
+        os.remove("patcher.bat")
+        os.remove("main.dol")
         common.logMessage("Done!")
 
 
@@ -265,4 +285,4 @@ if __name__ == "__main__":
     if not os.path.isdir("data"):
         common.logError("data folder not found.")
         quit()
-    common.cli()
+    common.runCLI(common.cli)
