@@ -7,8 +7,7 @@ verify_ssl = true
 pyinstaller = "*"
 
 [packages]
-hacktools = "*"
-pyimgur = "*"
+hacktools = {extras = ["graphics"], version = "*"}
 
 [requires]
-python_version = "3.8"
+python_version = "3"

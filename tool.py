@@ -2,14 +2,11 @@ import codecs
 import csv
 import filecmp
 import os
-import time
 import click
-import pyimgur
-import requests
 from zipfile import ZipFile, ZIP_DEFLATED
 from hacktools import common, wii
 
-version = "1.5.5"
+version = "1.6.0"
 isofile = "data/disc.iso"
 infolder = "data/extract/"
 outfolder = "data/repack/"
@@ -92,7 +89,7 @@ def repack(no_patch, msbe, onlyquest, movie, tpl, fnt):
     with common.Stream(dolout, "rb+", False) as f:
         # Set the movie subtitles X position to 0 since we're doing some manual centering
         # Change "fsubs f28,f7,f8 to fsubs f28,f8,f8"
-        f.seek(0x8CF4)  # 0x8000cfb4
+        f.seek(0x8cf4)  # 0x8000cfb4
         f.writeUInt(0xef884028)
 
     if not no_patch:
@@ -144,30 +141,6 @@ def repack(no_patch, msbe, onlyquest, movie, tpl, fnt):
         os.remove("patcher.bat")
         os.remove("main.dol")
         common.logMessage("Done!")
-
-
-@common.cli.command()
-@click.argument("clientid")
-def generatepo(clientid):
-    tplfolder = "data/work_TPL"
-    tploriginal = "data/out_TPL"
-    files = common.getFiles(tplfolder)
-    im = pyimgur.Imgur(clientid)
-    with common.Stream("data/tpl.po", "w") as f:
-        for file in common.showProgress(files):
-            uploaded = False
-            while not uploaded:
-                try:
-                    image = im.upload_image(tploriginal + file, title="file")
-                    f.writeLine("#. " + image.link)
-                    f.writeLine("msgid \"" + file.split("/")[2] + "\"")
-                    f.writeLine("msgstr \"\"")
-                    f.writeLine("")
-                    uploaded = True
-                    time.sleep(30)
-                except requests.HTTPError:
-                    time.sleep(300)
-    common.logMessage("Done!")
 
 
 @common.cli.command()

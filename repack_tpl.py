@@ -46,27 +46,29 @@ def run():
         game.repackARC(repackfolder + file, outfolderarc + file)
     common.logMessage("Done!")
     # Copy tweaked 3d model texture
-    common.logMessage("Repacking 3D from", "data/work_3D", "...")
-    common.copyFolder("data/extract_3D", "data/repack_3D")
-    common.copyFile("data/work_3D/ID002_0000.brres", "data/repack_3D/item_od_all.arc/pac/ID002_0000.brres")
-    game.repackARC("data/repack_3D/item_od_all.arc", "data/repack/DATA/files/3d/map/item_od_all.arc")
-    common.logMessage("Done!")
+    if os.path.isdir("data/work_3D"):
+        common.logMessage("Repacking 3D from", "data/work_3D", "...")
+        common.copyFolder("data/extract_3D", "data/repack_3D")
+        common.copyFile("data/work_3D/ID002_0000.brres", "data/repack_3D/item_od_all.arc/pac/ID002_0000.brres")
+        game.repackARC("data/repack_3D/item_od_all.arc", "data/repack/DATA/files/3d/map/item_od_all.arc")
+        common.logMessage("Done!")
     # Copy particle effects
-    common.logMessage("Repacking EFF from", "data/work_EFF", "...")
-    common.copyFolder("data/extract_EFF", "data/repack_EFF")
-    common.makeFolder("data/repack_BREFT")
-    files = common.getFiles("data/work_EFF", ".png")
-    for file in common.showProgress(files):
-        filesplit = file.split("/")
-        arcfile = filesplit[1]
-        breftfile = filesplit[2]
-        pngfile = filesplit[3]
-        common.copyFolder("data/extract_BREFT/" + arcfile + "/" + breftfile, "data/repack_BREFT/" + arcfile + "/" + breftfile)
-        common.execute("wimgt -o ENCODE data/work_EFF" + file + " -D " + "data/repack_BREFT/" + arcfile + "/" + breftfile + "/files/" + pngfile.replace(".png", "") + " -x BTIMG", False)
-        common.execute("wszst -o CREATE " + "data/repack_BREFT/" + arcfile + "/" + breftfile + " -D " + "data/repack_EFF/" + arcfile + "/" + arcfile.replace(".arc", "") + "/" + breftfile, False)
-    common.logMessage("Repacking ARC from", "data/repack_EFF", "...")
-    files = os.listdir("data/repack_EFF")
-    for file in common.showProgress(files):
-        common.logDebug("Processing", file, "...")
-        game.repackARC("data/repack_EFF/" + file, outfolder + "effect/" + file)
-    common.logMessage("Done!")
+    if os.path.isdir("data/work_EFF"):
+        common.logMessage("Repacking EFF from", "data/work_EFF", "...")
+        common.copyFolder("data/extract_EFF", "data/repack_EFF")
+        common.makeFolder("data/repack_BREFT")
+        files = common.getFiles("data/work_EFF", ".png")
+        for file in common.showProgress(files):
+            filesplit = file.split("/")
+            arcfile = filesplit[1]
+            breftfile = filesplit[2]
+            pngfile = filesplit[3]
+            common.copyFolder("data/extract_BREFT/" + arcfile + "/" + breftfile, "data/repack_BREFT/" + arcfile + "/" + breftfile)
+            common.execute("wimgt -o ENCODE data/work_EFF" + file + " -D " + "data/repack_BREFT/" + arcfile + "/" + breftfile + "/files/" + pngfile.replace(".png", "") + " -x BTIMG", False)
+            common.execute("wszst -o CREATE " + "data/repack_BREFT/" + arcfile + "/" + breftfile + " -D " + "data/repack_EFF/" + arcfile + "/" + arcfile.replace(".arc", "") + "/" + breftfile, False)
+        common.logMessage("Repacking ARC from", "data/repack_EFF", "...")
+        files = os.listdir("data/repack_EFF")
+        for file in common.showProgress(files):
+            common.logDebug("Processing", file, "...")
+            game.repackARC("data/repack_EFF/" + file, outfolder + "effect/" + file)
+        common.logMessage("Done!")
