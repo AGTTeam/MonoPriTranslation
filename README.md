@@ -1,17 +1,11 @@
 # MonoPri Translation
 This repository is for the tool used to translate the game. If you're looking for the English patch, click [here](http://www.romhacking.net/translations/6340/).  
 ## Setup
-Create a "data" folder and copy the iso as "disc.iso" in it.  
+Install [Python 3](https://www.python.org/downloads/).  
 Install [WIT](https://wit.wiimm.de/download.html) and [SZS](https://szs.wiimm.de/download.html).  
-## Run from binary
-Download the latest [release](https://github.com/Illidanz/MonoPriTranslation/releases) outside the data folder.  
-Run `tool extract` to extract everything and `tool repack` to repack after editing.  
-Run `tool extract --help` or `tool repack --help` for more info.  
-## Run from source
-Install [Python 3](https://www.python.org/downloads/) and pipenv.  
-Download [brfnt2tpl.exe](http://wiki.tockdom.com/wiki/Brfnt2tpl).  
-Run `pipenv sync`.  
-Run the tool with `pipenv run tool.py` or build with `pipenv run pyinstaller tool.spec`.  
+Download this repository by downloading and extracting it, or cloning it.  
+Copy the original Japanese rom into the same folder and rename it as `disc.iso`.  
+Run `run_windows.bat` (for Windows) or `run_bash` (for OSX/Linux) to run the tool.  
 ## Text Editing
 Rename the \*\_output.txt files to \*\_input.txt (msbe_output.txt to msbe_input.txt, etc) and add translations for each line after the "=" sign.  
 The text in msbe_input is automatically wordwrapped, but a "|" can be used to force a line break.  
@@ -24,3 +18,8 @@ If an image doesn't require repacking, it should be deleted from the work folder
 ## Smartcat import
 To import the translate lines, download the .csv files from Smartcat (Export -> Special Formats -> Multilingual CSV) and put them in the data folder, then run `tool smartcat`.  
 Note that this will override the msbe_input.txt file.  
+## Run from command line
+This is not recommended if you're not familiar with Python and the command line.  
+After following the Setup section, run `pipenv sync` to install dependencies.  
+Run `pipenv run python tool.py extract` to extract everything, and `pipenv run python tool.py repack` to repack.  
+You can use switches like `pipenv run python tool.py repack --bin` to only repack certain parts to speed up the process.  

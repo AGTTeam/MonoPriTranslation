@@ -7,7 +7,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 from hacktools import common, wii
 
 version = "1.6.0"
-isofile = "data/disc.iso"
+isofile = "disc.iso"
 infolder = "data/extract/"
 outfolder = "data/repack/"
 replacefolder = "data/replace/"
@@ -30,8 +30,8 @@ xmlfile = "data/patch/riivolution/monopri.xml"
 @click.option("--movie", is_flag=True, default=False)
 @click.option("--tpl", is_flag=True, default=False)
 @click.option("--fnt", is_flag=True, default=False)
-@click.option("--speaker", is_flag=True, default=False)
-@click.option("--merge", is_flag=True, default=False)
+@click.option("--speaker", is_flag=True, default=False, hidden=True)
+@click.option("--merge", is_flag=True, default=False, hidden=True)
 def extract(iso, msbe, movie, tpl, fnt, speaker, merge):
     all = not iso and not msbe and not movie and not fnt and not tpl
     if all or iso:
@@ -56,9 +56,9 @@ def extract(iso, msbe, movie, tpl, fnt, speaker, merge):
 
 
 @common.cli.command()
-@click.option("--no-patch", is_flag=True, default=False)
+@click.option("--no-patch", is_flag=True, default=False, hidden=True)
 @click.option("--msbe", is_flag=True, default=False)
-@click.option("--onlyquest", is_flag=True, default=False)
+@click.option("--onlyquest", is_flag=True, default=False, hidden=True)
 @click.option("--movie", is_flag=True, default=False)
 @click.option("--tpl", is_flag=True, default=False)
 @click.option("--fnt", is_flag=True, default=False)
@@ -143,7 +143,7 @@ def repack(no_patch, msbe, onlyquest, movie, tpl, fnt):
         common.logMessage("Done!")
 
 
-@common.cli.command()
+@common.cli.command(hidden=True)
 def dupe():
     seen = {}
     sections = common.getSections("data/msbe_input.txt")
@@ -176,7 +176,7 @@ def cleanSection(section):
     return section
 
 
-@common.cli.command()
+@common.cli.command(hidden=True)
 def smartcat():
     click.confirm("Importing Smartcat CSV will override the msbe_input.txt and movie_input.txt files, are you sure?", abort=True)
     common.logMessage("Importing Smartcat CSV ...")
@@ -254,8 +254,4 @@ def smartcat():
 
 
 if __name__ == "__main__":
-    click.echo("MonoPriTranslation version " + version)
-    if not os.path.isdir("data"):
-        common.logError("data folder not found.")
-        quit()
-    common.runCLI(common.cli)
+    common.setupTool("MonoPriTranslation", version, "data", isofile, 0x3ab10abb)

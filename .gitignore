@@ -1,7 +1,10 @@
 __pycache__
-
-build
-data*
+.DS_Store
 *.log
+data
+patch
 *.exe
+*.ttf
+*.iso
+main.dol
 notes.md
