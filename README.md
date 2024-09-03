@@ -1,5 +1,5 @@
 # MonoPri Translation
-This repository is for the tool used to translate the game. If you're looking for the English patch, click [here](http://www.romhacking.net/translations/6340/).  
+This repository is for the tool used to translate the game. If you're looking for the English patch, click [here](https://agtteam.net/monopri).  
 ## Setup
 Install [Python 3](https://www.python.org/downloads/).  
 Install [WIT](https://wit.wiimm.de/download.html) and [SZS](https://szs.wiimm.de/download.html).  
